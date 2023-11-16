@@ -21,3 +21,4 @@ the c-toolbox is a repo containing a bunsh of ready to use tools for c programme
     2. Defines section
     3. Functions' signature diclaration section
 3. Each functionality should be independent of any other functionality except for c standard libraries.
+4. For each functionality under './src/' there is a test script under './tests/' that has the same relative path and name.  
