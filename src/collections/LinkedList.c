@@ -24,26 +24,24 @@ LinkedList LinkedList_create(){
 }
 
 void LinkedList_destroy(LinkedList* list){
-    //if list is empty
-    if(!list->head) {
-        list->length = 0;
-        list->tail = 0;
-        return;
-    }
-
-    //if list has node(s)
-    LinkedListNode* n = list->head;
-    do{
-        LinkedListNode* next = n->next;
+    //TODO : may want to allocate all nodes in an arena so it can be freed with a singel call
+    while(list->length > 0){
+        LinkedListNode* n = LinkedList_pop(list);
         Node_destroy(n);
-        n = next;
-    }while(n);
+    }
+    return;
 }
 
 
 void LinkedList_insert(LinkedList* list, int index, int size, void* data){
     if(index > list->length){
         //error : index out of range
+        printf("ERROR : insert index out of range\n");
+        return;
+    }
+    if(index == 0) {
+        //if the index point to the head of list, simply call push
+        LinkedList_push(list, size, data);
         return;
     }
     if(index == list->length) {
@@ -101,17 +99,40 @@ void LinkedList_apend(LinkedList* list, int size, void* data){
     list->length++;
 }
 
-void LinkedList_remove(LinkedList* list, int index){
+void  LinkedList_push(LinkedList* list, int size, void* data){
+    if(list->length == 0){
+        //an empty list
+        list->head = list->tail = Node_create(size, data);
+    }else{
+        //a filled list
+        LinkedListNode* n = Node_create(size, data);
+        n->next = list->head;
+        list->head->pre = n;
+        list->head = n;
+    }
+    list->length++;
+}
+
+void LinkedList_delete(LinkedList* list, int index){
+    if(list->length == 0) {
+        printf("ERROR : list is empty\n");
+        return;
+    }
     if(index > list->length){
         //error : index out of range
+        printf("ERROR : delete index out odf range\n");
         return;
     }
     if(index == list->length - 1) {
         //if the index point to the end of list, simply call append
-        LinkedList_pop(list);
+        Node_destroy(LinkedList_pop(list));
         return;
     }
-
+    if(index == 0){
+        //if the index point to the end of list, simply call append
+        Node_destroy(LinkedList_shift(list));
+        return;
+    }
     if(index <= list->length/2){
         // if the index lesser than than half the length of list start from itiration from the start
         LinkedListNode* n = list->head;
@@ -145,10 +166,82 @@ void LinkedList_remove(LinkedList* list, int index){
     }
 }
 
+LinkedListNode* LinkedList_remove(LinkedList* list, int index){
+    if(index > list->length){
+        //error : index out of range
+        printf("ERROR : remove index out odf range\n");
+        return 0;
+    }
+    if(index == list->length - 1) {
+        //if the index point to the end of list, simply call append
+        return LinkedList_pop(list);
+    }
+    if(index == 0){
+        //if the index point to the end of list, simply call append
+        return LinkedList_shift(list);
+    }
+    if(index <= list->length/2){
+        // if the index lesser than than half the length of list start from itiration from the start
+        LinkedListNode* n = list->head;
+        unsigned int i = 0;
+        while(n){
+            if (i == index) {
+                n->pre->next = n->next;
+                n->next->pre = n->pre;
+                list->length--;
+                return n;
+            }
+            n = n->next;
+            i++;
+        }
+    }else if(index > list->length/2){
+        // if the index greater than half the length of list start itiration from the end
+        LinkedListNode* n = list->tail;
+        unsigned int i = list->length -1;
+        while(n){
+            if (i == index) {
+                n->pre->next = n->next;
+                n->next->pre = n->pre;
+                list->length--;
+                return n;
+            }
+            n = n->pre;
+            i--;
+        }
+    }
+    printf("ERROR : Unknown\n");
+    return 0;
+}
+
+LinkedListNode* LinkedList_shift(LinkedList* list){
+    if(list->length == 0) return 0;
+
+    LinkedListNode* l = list->head;
+    if(list->length == 1){
+        list->head = list->tail = 0; 
+    }else{
+        list->head = l->next;
+        list->head->pre = 0;
+    }
+    list->length--;
+    l->next = 0;
+    l->pre = 0;
+    return l;
+}
+
 LinkedListNode* LinkedList_pop(LinkedList* list){
+    if(list->length == 0) return 0;
+
     LinkedListNode* l = list->tail;
-    list->tail = list->tail->pre;
-    list->tail->next = 0;
+    if(list->length == 1){
+        list->head = list->tail = 0; 
+    }else{
+        list->tail = l->pre;
+        list->tail->next = 0;
+    }
+    list->length--;
+    l->next = 0;
+    l->pre = 0;
     return l;
 }
 
@@ -180,15 +273,19 @@ LinkedListNode* LinkedList_get_node(LinkedList* list, int index){
 }
 
 LinkedListNode* Node_create_empty(){
-    LinkedListNode* n = (LinkedListNode*)malloc(sizeof(LinkedListNode));
-    return n ? n : (void*)0;
+    return Node_create(0,0);
 }
 
 LinkedListNode* Node_create(int size, void* data) {
     LinkedListNode* n = (LinkedListNode*)malloc(sizeof(LinkedListNode));
     if (!n) {
         fprintf(stderr, "Memory allocation failed for LinkedListNode\n");
-        exit(EXIT_FAILURE);
+        return 0;
+    }
+
+    if(size == 0){
+        //if size is not defined return an empty node
+        return n;
     }
 
     // Allocate memory for n->data
@@ -196,7 +293,7 @@ LinkedListNode* Node_create(int size, void* data) {
     if (!n->data) {
         fprintf(stderr, "Memory allocation failed for data\n");
         free(n);
-        exit(EXIT_FAILURE);
+        return 0;
     }
 
     // Copy data into n->data
@@ -207,7 +304,6 @@ LinkedListNode* Node_create(int size, void* data) {
 
     return n;
 }
-
 
 void Node_destroy(LinkedListNode* node){
     if(!node) return;
