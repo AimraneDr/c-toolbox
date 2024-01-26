@@ -44,7 +44,7 @@ void LinkedList_insert(LinkedList* list, int index, int size, void* data);
 /**
  * @brief insert a node element at the tail of the list
 */
-void LinkedList_apend(LinkedList* list, int size, void* data);
+void LinkedList_append(LinkedList* list, int size, void* data);
 /**
  * insert a node element at the head of the list
 */
@@ -97,5 +97,11 @@ LinkedListNode* Node_create(int size, void* data);
 void Node_destroy(LinkedListNode* node);
 
 
-#define LinkedListAppend(list, val) \
-    LinkedList_apend(list, sizeof(*val), (void*)(val));
+#define LinkedListAppend(list_ptr, val_ptr) \
+    LinkedList_append(list_ptr, sizeof(*val_ptr), (void*)(val_ptr));
+
+#define LinkedListInsert(list_ptr, val_ptr, index) \
+    LinkedList_insert(list_ptr, index, sizeof(*val_ptr), (void*)(val_ptr));
+
+#define LinkedListPush(list_ptr, val_ptr) \
+    LinkedList_push(list_ptr, sizeof(*val_ptr), (void*)(val_ptr));
