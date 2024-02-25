@@ -10,7 +10,7 @@ int test_removing();
 int test_shifting();
 int test_poping();
 int test_getting();
-int test_destroying();
+int test_cleaning();
 
 int main(){    
     printf("Start LinkedList test proccess ...\n\n");
@@ -24,7 +24,7 @@ int main(){
     result += test_shifting();
     result += test_poping();
     result += test_getting();
-    result += test_destroying();
+    result += test_cleaning();
     if(result == 0){
         printf("\nAll tests had passed successfully.\n\n");
     }else{
@@ -92,7 +92,6 @@ int test_deleting(){
     for(int i = 0; i < 100; i++){
         LinkedListPush(&l1, &i);
     }
-
     while(l1.length > 1){
         LinkedList_delete(&l1, 1);
     }
@@ -112,7 +111,6 @@ int test_removing(){
     for(int i = 0; i < 100; i++){
         LinkedListPush(&l1, &i);
     }
-
     while(l1.length > 1){
         Node_destroy(LinkedList_remove(&l1, 1));
     }
@@ -132,7 +130,6 @@ int test_shifting(){
     for(int i = 0; i < 100; i++){
         LinkedListPush(&l1, &i);
     }
-
     while(l1.length > 0){
         Node_destroy(LinkedList_shift(&l1));
     }
@@ -149,7 +146,6 @@ int test_poping(){
     for(int i = 0; i < 100; i++){
         LinkedListPush(&l1, &i);
     }
-
     while(l1.length > 0){
         Node_destroy(LinkedList_pop(&l1));
     }
@@ -166,7 +162,6 @@ int test_getting(){
     for(int i = 0; i < 100; i++){
         LinkedListAppend(&l1, &i);
     }
-
     for(int i = 0; i < 100; i++){
         int val = *(int*)LinkedList_get_node(&l1, i)->data;
         if(val != i){
@@ -178,17 +173,16 @@ int test_getting(){
     return 0;
 }
 
-int test_destroying(){
+int test_cleaning(){
     LinkedList l1 = LinkedList_create();
     for(int i = 0; i < 100; i++){
         LinkedListPush(&l1, &i);
     }
-
-    LinkedList_destroy(&l1);
+    LinkedList_clean(&l1);
     if(l1.length == 0){
-        printf("[ SUCCESS ]\tdestroying LinkedList Test\n");
+        printf("[ SUCCESS ]\tcleaning LinkedList Test\n");
         return 0;
     }
-    printf("[ FAILED ]\tdestroying LinkedList Test\n");
+    printf("[ FAILED ]\tcleaning LinkedList Test\n");
     return 1;
 }

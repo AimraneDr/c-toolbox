@@ -8,7 +8,8 @@
 // INCLUDES
 
 //  DEFINES
-
+#ifndef LINKED_lIST_H
+#define LINKED_lIST_H
 
 typedef struct LinkedListNode
 {
@@ -35,7 +36,7 @@ LinkedList LinkedList_create();
 /**
  * @brief free the space allocated by a list
 */
-void LinkedList_destroy(LinkedList* list);
+void LinkedList_clean(LinkedList* list);
 
 /**
  * @brief insert a node element at a specific index
@@ -78,13 +79,6 @@ LinkedListNode* LinkedList_shift(LinkedList* list);
 */
 LinkedListNode* LinkedList_get_node(LinkedList* list, int index);
 
-
-/**
- * @brief create a zeroed out new node
- * @return LinkedListNode* : ptr to the new node
-*/
-LinkedListNode* Node_create_empty();
-
 /**
  * @brief create an initialize a new node
  * @return LinkedListNode* : ptr to the new node
@@ -105,3 +99,5 @@ void Node_destroy(LinkedListNode* node);
 
 #define LinkedListPush(list_ptr, val_ptr) \
     LinkedList_push(list_ptr, sizeof(*val_ptr), (void*)(val_ptr));
+
+#endif //LINKED_lIST_H

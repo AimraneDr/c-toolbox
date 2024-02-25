@@ -23,11 +23,10 @@ LinkedList LinkedList_create(){
     return l;
 }
 
-void LinkedList_destroy(LinkedList* list){
+void LinkedList_clean(LinkedList* list){
     //TODO : may want to allocate all nodes in an arena so it can be freed with a singel call
     while(list->length > 0){
-        LinkedListNode* n = LinkedList_pop(list);
-        Node_destroy(n);
+        LinkedList_delete(list, 0);
     }
     return;
 }
@@ -53,7 +52,7 @@ void LinkedList_insert(LinkedList* list, int index, int size, void* data){
         // if the index lesser than than half the length of list start from itiration from the start
         LinkedListNode* new = Node_create(size, data);
         LinkedListNode* n = list->head->next;
-        unsigned int i = 1;
+        int i = 1;
         while(n){
             if (i == index) {
                 n->pre->next = new;
@@ -70,7 +69,7 @@ void LinkedList_insert(LinkedList* list, int index, int size, void* data){
         // if the index greater than half the length of list start itiration from the end
         LinkedListNode* new = Node_create(size, data);
         LinkedListNode* n = list->tail->pre;
-        unsigned int i = list->length - 1;
+        int i = list->length - 1;
         while(n){
             if (i == index) {
                 n->pre->next = new;
@@ -151,7 +150,7 @@ void LinkedList_delete(LinkedList* list, int index){
     }else if(index > list->length/2){
         // if the index greater than half the length of list start itiration from the end
         LinkedListNode* n = list->tail->pre;
-        unsigned int i = list->length - 2;
+        int i = list->length - 2;
         while(n){
             if (i == index) {
                 n->pre->next = n->next;
@@ -171,7 +170,7 @@ LinkedListNode* LinkedList_remove(LinkedList* list, int index){
         printf("ERROR : list is empty\n");
         return (void*)0;
     }
-    
+
     if(index > list->length){
         //error : index out of range
         printf("ERROR : remove index out odf range\n");
@@ -257,9 +256,9 @@ LinkedListNode* LinkedList_pop(LinkedList* list){
 }
 
 LinkedListNode* LinkedList_get_node(LinkedList* list, int index){
-    unsigned int half_len = list->length/2; 
+    int half_len = list->length/2; 
     if(index < half_len){
-        unsigned int i = 0;
+        int i = 0;
         LinkedListNode* n = list->head;
         while(n){
             if (i == index) return n;
@@ -267,7 +266,7 @@ LinkedListNode* LinkedList_get_node(LinkedList* list, int index){
             i++;
         }
     }else if(index >= half_len){
-        unsigned int i = list->length - 1;
+        int i = list->length - 1;
         LinkedListNode* n = list->tail;
         while(n){
             if (i == index) return n;
@@ -281,10 +280,6 @@ LinkedListNode* LinkedList_get_node(LinkedList* list, int index){
     }
     printf("ERROR : unknown \n");
     return 0;
-}
-
-LinkedListNode* Node_create_empty(){
-    return Node_create(0,0);
 }
 
 LinkedListNode* Node_create(int size, void* data) {
