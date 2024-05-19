@@ -2,12 +2,12 @@ CC = clang
 CFLAGS = -Wall -g
 
 LIB_NAME = toolbox
-BUILD_DIR = /usr/lib
+BUILD_DIR = ~/Dev/libs/
 OBJ_DIR = obj/src
 
 DEFINES = -D_DEBUG
 INCLUDE_PATH = -Iinclude
-LINKER_FLAGS = -lX11
+LINKER_FLAGS = 
 
 SRC :=  $(wildcard $(shell find ./src -name '*.c'))
 OBJ := $(patsubst ./src/%.c, $(OBJ_DIR)/%.o, $(SRC))
@@ -20,7 +20,7 @@ scaffold :
 
 $(LIB_NAME): $(OBJ)
 	@echo building $(LIB_NAME) ...
-	@sudo $(CC) $(CFLAGS) -shared -o $(BUILD_DIR)/lib$@.so $^ $(LINKER_FLAGS)
+	@$(CC) $(CFLAGS) -shared -o $(BUILD_DIR)/lib$@.so $^ $(LINKER_FLAGS)
 	@echo done.
 
 $(OBJ_DIR)/%.o: ./src/%.c
@@ -29,7 +29,7 @@ $(OBJ_DIR)/%.o: ./src/%.c
 
 clean:
 	@echo cleaning ...
-	sudo rm $(BUILD_DIR)/lib$(LIB_NAME).so*
+	rm $(BUILD_DIR)/lib$(LIB_NAME).so*
 	rm -rf $(OBJ_DIR)/*
 
 .PHONY: all scaffold clean

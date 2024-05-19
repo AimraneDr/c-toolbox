@@ -1,6 +1,6 @@
 CC = clang
 CFLAGS = -Wall -Wextra -g
-LFLAGS = -ltoolbox
+LFLAGS = -ltoolbox -L$(HOME)/Dev/libs/
 IFLAGS = -Iinclude
 
 OBJ_DIR = obj/tests
