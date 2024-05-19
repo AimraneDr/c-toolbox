@@ -62,6 +62,7 @@ void __DynamicArray_SetProperty(void* arr, DynamicArrayProperty prop, unsigned l
 }
 
 void DynamicArray_Destroy(void* arr){
+    if(!arr) return;
     u64* header = (u64*)arr - DARRAY_FIELD_LENGTH;
     free(header);
     arr = (void*)0;

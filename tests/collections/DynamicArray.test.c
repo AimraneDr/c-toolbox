@@ -1,40 +1,50 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "Test.h"
 #include "collections/DynamicArray.h"
 
-void test_creation(void** arr);
-void test_pushing(void** arr);
-void test_popping(void** arr);
+int test_creation(void** arr);
+int test_pushing(void** arr);
+int test_popping(void** arr);
 int main(void){
     int* arr = 0;
-    test_creation(&arr);
-    test_pushing(&arr);
-    test_popping(&arr);
+
+    Test *subTestArr = calloc(3, sizeof(Test));
+    subTestArr[0] = (Test){.title = "Creating Dynamic List", .data = &arr, .evaluate = test_creation};
+    subTestArr[1] = (Test){.title = "Pushing Elements in Dynamic List", .data = &arr, .evaluate = test_pushing};
+    subTestArr[2] = (Test){.title = "Popping Elements from Dynamic List", .data = &arr, .evaluate = test_popping};
+
+    Test test = {
+        .title = "Dynamic List",
+        .data = &arr,
+        .subTestsCount = 3,
+        .subTests = subTestArr
+    };
+
+    test_run(&test);
+
+    free(subTestArr);
     DynamicArray_Destroy(arr);
     return 0;
 }
 
-void test_creation(void** arr){
-    test_title("test dynamic list creating...", 0);
+int test_creation(void** arr){
     *arr = DynamicArray_Create(int);
     if(!*arr && DynamicArray_Capacity(arr) != DARRAY_INITIAL_CAPACITY){
-        test_fail("failed creating a dynamic array", 1);
-    }else{
-        test_success("creating dynamic array test succeeded!", 1);
+        return 0;
     }
-
-    test_title("test dynamic list reserving...", 0);
-    int* arr0 = DynamicArray_Reserve(10, int);
-    if(!arr0 && DynamicArray_Capacity(arr0) != 10){
-        test_fail("faild reserving a dynamic array", 1);
-    }else{
-        test_success("reserving dynamic array test succeeded!", 1);
+    else
+    {
+        int* arr0 = DynamicArray_Reserve(10, int);
+        if(!arr0 && DynamicArray_Capacity(arr0) != 10){
+            return 0;
+        }
+        return 1;
     }
 }
 
-void test_pushing(void** arr){
-    test_title("test pushing elems..", 0);
+int test_pushing(void** arr){
     unsigned long long count = 28;
     int samples[] = {
         0,1,2,3,4,
@@ -48,23 +58,23 @@ void test_pushing(void** arr){
         DynamicArray_Push(*arr, samples[i]);
     }
     if(DynamicArray_Capacity(*arr) == 32 && DynamicArray_Length(*arr) == count){
-        test_success("pushing test succeeded!", 1);
-    }else{
-        test_fail("pushing test failed!", 1);
+        return 1;
     }
-
+    else
+    {
+        return 0;
+    }
 }
 
-void test_popping(void** arr){
-    test_title("test popping elems..", 0);
+int test_popping(void** arr){
     int len = (int) DynamicArray_Length(*arr);
     for(int i=0; i<len; i++){
         DynamicArray_Pop(*arr, (void*)0);
     }
     len = (int) DynamicArray_Length(*arr);
     if(len == 0){
-        test_success("popping test succeeded!", 1);
+        return 1;
     }else{
-        test_fail("popping test failed !", 1);
+        return 0;
     }
 }
