@@ -1,33 +1,37 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "Test.h"
 #include "collections/DynamicArray.h"
 
+/* DECLARATIONS */
 int test_creation(void** arr);
 int test_pushing(void** arr);
 int test_popping(void** arr);
+
+/* MAIN PROGRAM */
+
 int main(void){
+
     int* arr = 0;
-
-    Test *subTestArr = calloc(3, sizeof(Test));
-    subTestArr[0] = (Test){.title = "Creating Dynamic List", .data = &arr, .evaluate = test_creation};
-    subTestArr[1] = (Test){.title = "Pushing Elements in Dynamic List", .data = &arr, .evaluate = test_pushing};
-    subTestArr[2] = (Test){.title = "Popping Elements from Dynamic List", .data = &arr, .evaluate = test_popping};
-
     Test test = {
         .title = "Dynamic List",
         .data = &arr,
         .subTestsCount = 3,
-        .subTests = subTestArr
+        .subTests = test_create_arr(3)
     };
 
-    test_run(&test);
+    test_register(test.subTests, 0, "Creating Dynamic List", &arr, test_creation);
+    test_register(test.subTests, 1, "Pushing Elements in Dynamic List", &arr, test_pushing);
+    test_register(test.subTests, 2, "Popping Elements from Dynamic List", &arr, test_popping);
 
-    free(subTestArr);
+    test_run(&test);
+    test_clean(&test);
+
     DynamicArray_Destroy(arr);
     return 0;
 }
+
+/* DEFINATIONS */
 
 int test_creation(void** arr){
     *arr = DynamicArray_Create(int);
