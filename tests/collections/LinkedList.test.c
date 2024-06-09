@@ -2,6 +2,7 @@
 
 #include "Test.h"
 #include "collections/LinkedList.h"
+#include "defines.h"
 
 int test_creation(void **data);
 int test_appending(void **data);
@@ -23,8 +24,7 @@ int main()
         .subTestsCount = subTestCount,
         .subTests = test_create_arr(subTestCount)};
 
-    
-    test_register(test.subTests, 0, "Creating LinkedList", 0, test_creation);
+        test_register(test.subTests, 0, "Creating LinkedList", 0, test_creation);
     test_register(test.subTests, 1, "Appending elements to LinkedList", 0, test_appending);
     test_register(test.subTests, 2, "Inserting elements in LinkedList", 0, test_inserting);
     test_register(test.subTests, 3, "Pushing elements to LinkedList", 0, test_pushing);
@@ -36,14 +36,14 @@ int main()
 
     test_run(&test);
     test_clean(&test);
-    return 0;
+    return TRUE;
 }
 
 int test_creation(void **data)
 {
     LinkedList l1 = LinkedList_create();
     LinkedList l2 = LinkedList_create();
-    return l1.length == 0 && l2.length == 0 ? 1 : 0;
+    return l1.length == 0 && l2.length == 0 ? TRUE : FALSE;
 }
 
 int test_appending(void **data)
@@ -53,7 +53,7 @@ int test_appending(void **data)
     {
         LinkedListAppend(&l1, &i);
     }
-    return l1.length == 100 ? 1 : 0;
+    return l1.length == 100 ? TRUE : FALSE;
 }
 
 int test_inserting(void **data)
@@ -67,7 +67,7 @@ int test_inserting(void **data)
         LinkedListInsert(&l1, &i1, j);
         j++;
     }
-    return l1.length == 200 ? 1 : 0;
+    return l1.length == 200 ? TRUE : FALSE;
 }
 
 int test_pushing(void **data)
@@ -77,7 +77,7 @@ int test_pushing(void **data)
     {
         LinkedListPush(&l1, &i);
     }
-    return l1.length == 100 ? 1 : 0;
+    return l1.length == 100 ? TRUE : FALSE;
 }
 
 int test_deleting(void **data)
@@ -95,7 +95,7 @@ int test_deleting(void **data)
     {
         LinkedList_delete(&l1, 0);
     }
-    return l1.length == 0 ? 1 : 0;
+    return l1.length == 0 ? TRUE : FALSE;
 }
 
 int test_removing(void **data)
@@ -113,7 +113,7 @@ int test_removing(void **data)
     {
         Node_destroy(LinkedList_remove(&l1, 0));
     }
-    return l1.length == 0 ? 1 : 0;
+    return l1.length == 0 ? TRUE : FALSE;
 }
 
 int test_shifting(void **data)
@@ -127,7 +127,7 @@ int test_shifting(void **data)
     {
         Node_destroy(LinkedList_shift(&l1));
     }
-    return l1.length == 0 ? 1 : 0;
+    return l1.length == 0 ? TRUE : FALSE;
 }
 
 int test_poping(void **data)
@@ -141,7 +141,7 @@ int test_poping(void **data)
     {
         Node_destroy(LinkedList_pop(&l1));
     }
-    return l1.length == 0 ? 1 : 0;
+    return l1.length == 0 ? TRUE : FALSE;
 }
 
 int test_getting(void **data)
@@ -156,10 +156,9 @@ int test_getting(void **data)
         int val = *(int *)LinkedList_get_node(&l1, i)->data;
 
         if (val != i)
-            return 0;
+            return FALSE;
     }
-    //success
-    return 1;
+    return TRUE;
 }
 
 int test_cleaning(void **data)
@@ -170,5 +169,5 @@ int test_cleaning(void **data)
         LinkedListPush(&l1, &i);
     }
     LinkedList_clean(&l1);
-    return l1.length == 0 ? 1 : 0;
+    return l1.length == 0 ? TRUE : FALSE;
 }

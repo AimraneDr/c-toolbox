@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 /// @brief run sub tests recursivly
 /// @param t
@@ -9,9 +10,9 @@
 /// @return
 
 void test_title(char *msg, int level);
-void test_fail(char *msg, int level);
-void test_error(char *msg, int level);
-void test_success(char *msg, int level);
+void test_fail(char *msg, int level, clock_t start);
+void test_error(char *msg, int level, clock_t start);
+void test_success(char *msg, int level, clock_t start);
 
 int run_sub_test(Test *t, int level)
 {
@@ -24,13 +25,14 @@ int run_sub_test(Test *t, int level)
             run_sub_test(&currentTest, level + 1);
         }
 
+        clock_t start = clock();
         if (currentTest.evaluate(currentTest.data))
         {
-            test_success(currentTest.title, level);
+            test_success(currentTest.title, level, start);
         }
         else
         {
-            test_fail(t->title, level);
+            test_fail(t->title, level, start);
             if (currentTest.passOrFail)
                 return 0;
         }
@@ -44,7 +46,11 @@ int run_sub_test(Test *t, int level)
 int test_run(Test *test)
 {
     if (!test)
-        test_error("no test is provided", 0);
+        test_error("no test is provided", 0, 0);
+
+
+    // Starcleart the timer
+    clock_t start = clock();
 
     test_title(test->title, 0);
 
@@ -52,21 +58,21 @@ int test_run(Test *test)
     {
         if (run_sub_test(test, 1))
         {
-            test_success(test->title, 0);
+            test_success(test->title, 0, start);
             return 1;
         }
-        test_fail(test->title, 0);
+        test_fail(test->title, 0, start);
         return 0;
     }
 
     if (test->evaluate(test->data))
     {
-        test_fail(test->title, 0);
+        test_fail(test->title, 0, start);
         return 0;
     }
     else
     {
-        test_success(test->title, 0);
+        test_success(test->title, 0, start);
     }
 
     return 1;
@@ -100,23 +106,23 @@ void test_title(char *msg, int level)
     printf("[TEST START] : %s\n", msg);
 }
 
-void test_fail(char *msg, int level)
+void test_fail(char *msg, int level, clock_t start)
 {
     for (int i = 0; i < level; i++)
         printf("    ");
-    printf("[FAIL] : %s\n", msg);
+    printf("[FAIL] : %s ..................... [%f ms]\n", msg, ((double)(clock() - start)) * 1000 / CLOCKS_PER_SEC);
 }
 
-void test_success(char *msg, int level)
+void test_success(char *msg, int level, clock_t start)
 {
     for (int i = 0; i < level; i++)
         printf("    ");
-    printf("[DONE] : %s\n", msg);
+    printf("[DONE] : %s ..................... [%f ms]\n", msg, ((double)(clock() - start)) * 1000 / CLOCKS_PER_SEC);
 }
 
-void test_error(char *msg, int level)
+void test_error(char *msg, int level, clock_t start)
 {
     for (int i = 0; i < level; i++)
         printf("    ");
-    printf("[ERROR] : %s\n", msg);
+    printf("[ERROR] : %s ..................... [%f ms]\n", msg, start == 0 ? 0 : ((double)(clock() - start)) * 1000 / CLOCKS_PER_SEC);
 }
